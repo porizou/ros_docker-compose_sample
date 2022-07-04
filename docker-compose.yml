@@ -1,0 +1,40 @@
+version: '3'
+
+networks:
+  ros:
+    driver: bridge
+
+services:
+  ros-master:
+    image: ros:noetic-ros-core
+    hostname: ros-master
+    command: roscore
+    networks:
+      - ros
+    restart: always
+
+  talker:
+    image: ros:ros-tutorials
+    depends_on:
+      - ros-master
+    hostname: talker
+    environment:
+      - "ROS_HOSTNAME=talker"
+      - "ROS_MASTER_URI=http://ros-master:11311"
+    command: rosrun roscpp_tutorials talker       
+    networks:
+      - ros
+    restart: always
+
+  listener:
+    image: ros:ros-tutorials
+    depends_on:
+      - ros-master
+    hostname: listener
+    environment:
+      - "ROS_HOSTNAME=listener"
+      - "ROS_MASTER_URI=http://ros-master:11311"
+    command: rosrun roscpp_tutorials listener
+    networks:
+      - ros
+    restart: always
